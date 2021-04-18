@@ -29,7 +29,9 @@ SUBDIRS = \ #sub projects names
 	io_base \ # a few basic file formats (ply, obj, off), without this you cannot open anything
 	decorate_base \
 	filter_measure \
-	filter_meshing
+	filter_meshing \
+	filter_meshing_M \
+	filter_testBezier
 
 !meshlab_mini {
 # Other sub project, compiled only when config is not MeshLab Mini
@@ -126,6 +128,8 @@ io_base.subdir = meshlabplugins/io_base
 decorate_base.subdir = meshlabplugins/decorate_base
 filter_measure.subdir = meshlabplugins/filter_measure
 filter_meshing.subdir = meshlabplugins/filter_meshing
+filter_meshing_M.subdir = meshlabplugins/filter_meshing_M
+filter_testBezier.subdir = meshlabplugins/filter_testBezier
 use_cpu_opengl.subdir = use_cpu_opengl
 # IO plugins
 io_3ds.subdir = meshlabplugins/io_3ds
@@ -203,6 +207,8 @@ io_base.depends = common
 decorate_base.depends = common
 filter_measure.depends = common
 filter_meshing.depends = common
+filter_meshing_M.depends = common
+filter_testBezier.depends = common
 # IO plugins
 io_3ds.depends = common external
 io_bre.depends = common
