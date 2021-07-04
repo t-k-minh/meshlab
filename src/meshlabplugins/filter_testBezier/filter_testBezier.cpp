@@ -25,7 +25,7 @@
 #define same_line 11 // any number
 
 // DEBUG EXTRACT EXTERNAL BOUNDARY
-#define _M_DEBUG
+//#define _M_DEBUG
 #ifdef _M_DEBUG
 #define M_LOG(...) qDebug(__VA_ARGS__)
 #else
@@ -124,6 +124,7 @@ void TestBezierPlugin::initParameterList(const QAction *action, MeshModel &m, Ri
 		parlst.addParam(RichBool("case1", true, "External Boundary Extraction", "Case 1"));
 		parlst.addParam(RichBool("case2", true, "Internal Boundary Extraction", "Case 2"));
 		parlst.addParam(RichBool("case3", true, "Filling the Holes", "Case 3"));
+		parlst.addParam(RichBool("case3_1", true, "Filling the Holes with 2 extended", "Case 3.1"));
 		parlst.addParam(RichBool("case4", true, "Refine points of the Holes", "Case 4"));
 		//parlst.addParam(new RichInt("x", 3, "X", "x variable"));
 		//parlst.addParam(new RichInt("y", 4, "Y", "y variable"));
@@ -791,6 +792,14 @@ void set_point(CVertexO *vertices, int &index, int x, int y)
 	CVertexO a;
 	a.P() = vcg::Point3f(x, y, 0.0);
 	vertices[index] = a;
+	/*
+	* Note:
+	* If error occur
+	* Go to external dependencies
+	* Go to file: ...\meshlab\src\vcglib\vcg\simplex\vertex\component_ocf.h
+	* Find this line: inline InfoOcf &operator=(const InfoOcf &
+	* ONLY comment this: assert(0);
+	*/
 	index++;
 }
 
@@ -1491,6 +1500,7 @@ std::map<std::string, QVariant> TestBezierPlugin::applyFilter(
 	bool case1 = par.getBool("case1");
 	bool case2 = par.getBool("case2");
 	bool case3 = par.getBool("case3");
+	bool case3_1 = par.getBool("case3_1");
 	bool case4 = par.getBool("case4");
 
 	if (md.mm() == NULL)
@@ -2252,7 +2262,8 @@ std::map<std::string, QVariant> TestBezierPlugin::applyFilter(
 							CVertexO p0, p3;
 
 							//setup start point
-							x_temp = p1.P().X() - 1;
+							if (case3) x_temp = p1.P().X() - 1;
+							if(case3_1) x_temp = p1.P().X() - 2; // extend 2
 							y_temp = p1.P().Y();
 							if (xy[Cal_index_k(x_temp, y_temp, expanded_y, k_max)] != NULL)
 								p0 = *xy[Cal_index_k(x_temp, y_temp, expanded_y, k_max)];
@@ -2271,7 +2282,8 @@ std::map<std::string, QVariant> TestBezierPlugin::applyFilter(
 								p3 = *xy[Cal_index_k(x_temp, y_temp, expanded_y, k_max)];
 							else
 							{
-								p3.P().X() = p2.P().X() + 1;
+								if (case3) p3.P().X() = p2.P().X() + 1;
+								if (case3_1) p3.P().X() = p2.P().X() + 2; // extend 2
 								p3.P().Y() = p2.P().Y();
 								p3.P().Z() = p2.P().Z();
 							}
@@ -2432,7 +2444,8 @@ std::map<std::string, QVariant> TestBezierPlugin::applyFilter(
 
 							//setup start point
 							x_temp = p1.P().X();
-							y_temp = p1.P().Y() - 1;
+							if (case3) y_temp = p1.P().Y() - 1;
+							if (case3_1) y_temp = p1.P().Y() - 2; //extend 2
 							if (xy[Cal_index_k(x_temp, y_temp, expanded_y, k_max)] != NULL)
 								p0 = *xy[Cal_index_k(x_temp, y_temp, expanded_y, k_max)];
 							else
@@ -2445,7 +2458,8 @@ std::map<std::string, QVariant> TestBezierPlugin::applyFilter(
 
 							//setup end point
 							x_temp = p2.P().X();
-							y_temp = p2.P().Y() + 1;
+							if (case3) y_temp = p2.P().Y() + 1;
+							if (case3_1) y_temp = p2.P().Y() + 2; //extend 2
 							if (xy[Cal_index_k(x_temp, y_temp, expanded_y, k_max)] != NULL)
 								p3 = *xy[Cal_index_k(x_temp, y_temp, expanded_y, k_max)];
 							else
